@@ -29,12 +29,13 @@ def t_stat(X, y):
     
     S = sp.cumsum(X*u[:, None], 0)
     C = 1./T**2 * (S[:, :, None]*S[:, None, :]).sum(0)
-    C_chol = sp.linalg.cholesky(C)
+#    C_chol = sp.linalg.cholesky(C)
     
     Q = 1./T * (X[:, None, :]*X[:, :, None]).sum(0)
     
-#    B = sp.linalg.inv(Q).dot(C).dot(sp.linalg.inv(Q))
-    B_chol = sp.linalg.solve(Q, C_chol)
+    B = sp.linalg.inv(Q).dot(C).dot(sp.linalg.inv(Q))
+#    B_chol = sp.linalg.solve(Q, C_chol)
     
-    sigmas = sp.diag(B_chol)/sp.sqrt(T)
-    return sigmas
+#    sigmas = sp.diag(B_chol)/sp.sqrt(T)
+    sigmas = sp.sqrt(sp.diag(B)/T)
+    return beta/sigmas
