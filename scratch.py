@@ -1,6 +1,8 @@
 import scipy as sp
 import pandas as pd
 
+# Kiefer, Vogelsang, Bunzel 2000 - Simple, Robust Testing of Regression Hypotheses
+
 def wiener(size, steps=1000):
     r = sp.arange(1, steps+1)/steps
     z = sp.random.normal(size=(size, steps))
@@ -25,10 +27,12 @@ def t_stat(X, y):
     
     S = sp.cumsum(X*u[:, None], 0)
     C = 1./T**2 * (S[:, :, None]*S[:, None, :]).sum(0)
+    C_chol = sp.linalg.cholesky(C)
     
     Q = 1./T * (X[:, None, :]*X[:, :, None]).sum(0)
     
-    B = sp.linalg.inv(Q).dot(C).dot(sp.linalg.inv(Q))
+#    B = sp.linalg.inv(Q).dot(C).dot(sp.linalg.inv(Q))
+    B_chol = sp.linalg.solve(Q, C_chol)
     
-    sigmas = sp.sqrt(sp.diag(B)/T)
-    return beta/sigmas
+    sigmas = sp.diag(B_chol)/sp.sqrt(T)
+    return sigmas
