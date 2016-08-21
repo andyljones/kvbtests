@@ -15,12 +15,14 @@ def sample_kvb(size):
     return (w1/sp.sqrt(bottom))[:, 0]
 
 def critical_values(ps=[90, 95, 99], size=100000):
+    """Calculates critical values for the KVB distribution using `size` samples"""
     chunk_size = min(size, 10000)
     n_chunks = int(size/chunk_size) + 1
     samples = sp.hstack([sample_kvb(chunk_size) for _ in range(n_chunks)])[:size]
     return pd.Series(sp.percentile(samples, ps), ps)
     
 def t_stat(X, y):
+    """Calculate the KVB t-stats for the regression coefficients of y on X"""
     T = y.shape[0]
     beta = sp.linalg.solve(X.T.dot(X), X.T.dot(y))
     u = y - X.dot(beta)
