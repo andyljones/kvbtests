@@ -16,7 +16,7 @@ def t_stat(X, y):
     k = 1 - sp.arange(T)/T
     diag = (v[:, :, None]*v[:, None, :]).sum(0)
     offdiag = sum(k[i]*(v[i:, :, None]*v[:T-i, None, :]).sum(0) for i in range(1, T))
-    C = (diag + offdiag + offdiag.T)/(2*T)
+    C = (diag + offdiag + offdiag.T)/T
     
     Q = 1/T*(X[:, None, :]*X[:, :, None]).sum(0)
     
@@ -30,7 +30,9 @@ def pdf(z, tol=1e-5):
     if z == 0:
         return 0.15085282
     
-    first_terms = 1./sp.pi * sp.sqrt(2./sp.absolute(z))
+    z = sp.absolute(z)
+        
+    first_terms = 1./sp.pi * 2**.25/sp.sqrt(z)
     
     tol = tol/first_terms
     summands = []
@@ -41,7 +43,7 @@ def pdf(z, tol=1e-5):
 
         g_as = [[], [-.25]]
         g_bs = [[.25, .5, 0], []]
-        g_z = z**2 * (j + .25)**2
+        g_z = (sp.sqrt(2)*z)**2 * (j + .25)**2
         g = float(meijerg(g_as, g_bs, g_z))
         
         summand = binomial*sign*g
@@ -71,7 +73,7 @@ def cdf(z, tol=1e-5):
 
         g_as = [[1], [0]]
         g_bs = [[0.5, .75, .25], [0]]
-        g_z = z**2 * (j + .25)**2
+        g_z = 2*z**2 * (j + .25)**2
         g = float(meijerg(g_as, g_bs, g_z))
         
         constant = 0.5/sp.sqrt(j + .25)
