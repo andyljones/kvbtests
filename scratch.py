@@ -12,16 +12,16 @@ def t_stat(X, y):
     beta = sp.linalg.solve(X.T.dot(X), X.T.dot(y))
     u = y - X.dot(beta)
     
-    S = sp.cumsum(X*u[:, None], 0)
-    C = 1./T**2 * (S[:, :, None]*S[:, None, :]).sum(0)
-#    C_chol = sp.linalg.cholesky(C)
+    v = X*u[:, None]
+    k = 1 - sp.arange(T)/T
+    diag = (v[:, :, None]*v[:, None, :]).sum(0)
+    offdiag = sum(k[i]*(v[i:, :, None]*v[:T-i, None, :]).sum(0) for i in range(1, T))
+    C = (diag + offdiag + offdiag.T)/(2*T)
     
-    Q = 1./T * (X[:, None, :]*X[:, :, None]).sum(0)
+    Q = 1/T*(X[:, None, :]*X[:, :, None]).sum(0)
     
-    B = sp.linalg.inv(Q).dot(C).dot(sp.linalg.inv(Q))
-#    B_chol = sp.linalg.solve(Q, C_chol)
+    B = sp.linalg.solve(Q, sp.linalg.solve(Q, C).T) # B = Q^-1 C Q^-1
     
-#    sigmas = sp.diag(B_chol)/sp.sqrt(T)
     sigmas = sp.sqrt(sp.diag(B)/T)
     return beta/sigmas
 
