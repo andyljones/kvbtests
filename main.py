@@ -63,11 +63,11 @@ def t_stat(X, y):
     k = 1 - sp.arange(T)/T
     diag = (v[:, :, None]*v[:, None, :]).sum(0)
     offdiag = sum(k[i]*(v[i:, :, None]*v[:T-i, None, :]).sum(0) for i in range(1, T))
-    C = (diag + offdiag + offdiag.T)/T
+    omega = (diag + offdiag + offdiag.T)/T
     
     Q = 1/T*(X[:, None, :]*X[:, :, None]).sum(0)
     
-    B = sp.linalg.solve(Q, sp.linalg.solve(Q, C).T) # B = Q^-1 C Q^-1
+    B = sp.linalg.solve(Q, sp.linalg.solve(Q, omega).T) # B = Q^-1 \Omega Q^-1
     
     sigmas = sp.sqrt(sp.diag(B)/T)
     return beta, beta/sigmas
