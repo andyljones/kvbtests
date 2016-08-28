@@ -189,7 +189,7 @@ def quantile(q, tol=1e-3):
     elif 0 < q < .5:
         x0 = -2
     else:
-        raise ValueError('Invalid quantile passed!')
+        raise ValueError('Quantile must be between 0 and 1!')
     
     return sp.optimize.newton(lambda x: cdf(x) - q, x0, pdf, tol=tol)
     
