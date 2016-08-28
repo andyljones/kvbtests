@@ -52,7 +52,8 @@ def t_stat(X, y):
         first element gives the fitted value of :math:`\beta` and the second element gives the t-stats.
     """
     if X.ndim == 1:
-        return t_stat(X[:, None], y)[0]
+        beta, t = t_stat(X[:, None], y)
+        return beta[0], t[0]
     
     T = y.shape[0]
     beta = sp.linalg.solve(X.T.dot(X), X.T.dot(y))
@@ -191,4 +192,23 @@ def quantile(q, tol=1e-3):
         raise ValueError('Invalid quantile passed!')
     
     return sp.optimize.newton(lambda x: cdf(x) - q, x0, pdf, tol=tol)
+    
+def _evaluate(T=50, p=0, q=0, reps=5000):
+    r"""A helper function for checking that :func:`t_stat` is working as expected.    
+    """
+    X = sp.random.normal(size=(T,))
+    k = sp.hstack([1, sp.cumprod(p*sp.ones((T-1,)))])
+    
+    n_significant = 0
+    for _ in range(reps):
+        e = sp.random.normal(size=(T+1,))
+        u = e[1:] + q*e[:-1]
+        u = sp.signal.convolve(u, k, 'full')[:T]
+    
+        y = X + u
+        
+        n_significant += 1 if t_stat(X, y)[1] > 3.76 else 0
+
+    return n_significant/reps
+    
     
