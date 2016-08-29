@@ -80,7 +80,7 @@ def pdf(z, tol=1e-5):
     described in Eqn 7. of Kiefer, Vogelsang & Bunzel (2000) or Abadir & Paruolo (1997).
     
     When using this function, be aware that values close to zero can take a long time to compute! See 
-    Abadir & Paruolo (2002) for details.
+    Abadir & Paruolo (1997) for details.
     
     Args:
         z (float): the value to calculate the density at
